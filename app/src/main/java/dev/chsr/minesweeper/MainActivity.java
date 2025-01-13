@@ -142,7 +142,6 @@ public class MainActivity extends AppCompatActivity {
             minefield[y][x] = 9;
             flagCount++;
             flagsTextView.setText(String.valueOf(flagCount));
-            flagCount = 0;
         }
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(flag, "alpha", flag.getAlpha(), Math.abs(flag.getAlpha() - 1));
         fadeIn.setDuration(250);
@@ -152,9 +151,11 @@ public class MainActivity extends AppCompatActivity {
     void initGame() {
         initField();
 
+        flagCount = 0;
         gridLayout.removeAllViews();
         gridLayout.setColumnCount(columns);
         gridLayout.setRowCount(rows);
+        flagsTextView.setText("0");
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
