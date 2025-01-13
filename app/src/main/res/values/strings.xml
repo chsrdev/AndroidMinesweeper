@@ -3,4 +3,6 @@
     <string name="restart">Restart</string>
     <string name="bombs">Bombs</string>
     <string name="flags">Flags</string>
+    <string name="you_won">You won!</string>
+    <string name="you_lost">You lost!</string>
 </resources>

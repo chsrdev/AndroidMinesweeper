@@ -21,8 +21,9 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
     final int rows = 7;
     final int columns = 7;
-    final int bombCount = 6;
+    final int bombCount = 2;
     int flagCount = 0;
+    int closedCardsCount = rows * columns;
     int[][] minefield = new int[rows][columns];
     int[] bombCountColor = {
             0xAAAAAAAA,
@@ -35,7 +36,9 @@ public class MainActivity extends AppCompatActivity {
             0xFF000000,
             0xFF808080
     };
-    boolean isGameStarted = false;
+    boolean isGameLost = false;
+    TextView wonTextView;
+    TextView lostTextView;
     List<Pair<Integer, Integer>> bombs = new ArrayList<>();
 
     GridLayout gridLayout;
@@ -57,44 +60,89 @@ public class MainActivity extends AppCompatActivity {
         flagsTextView = findViewById(R.id.flags);
         bombsCountTextView = findViewById(R.id.bombsCount);
         bombsCountTextView.setText(String.valueOf(bombCount));
+        wonTextView = findViewById(R.id.wonText);
+        lostTextView = findViewById(R.id.lostText);
+
         initGame();
     }
 
     private void restartGame() {
-        for (int i = 0; i < rows * columns; i++) {
-            CardView card = (CardView) gridLayout.getChildAt(i);
-            View text = card.findViewById(R.id.mine_text);
-            View flag = card.findViewById(R.id.flagImage);
-            if (text.getAlpha() == 1) {
-                ObjectAnimator fadeOut = ObjectAnimator.ofFloat(text, "alpha", 1, 0);
-                fadeOut.setDuration(250);
-                fadeOut.start();
-            }
-            if (flag.getAlpha() == 1) {
-                ObjectAnimator fadeOut = ObjectAnimator.ofFloat(flag, "alpha", 1, 0);
-                fadeOut.setDuration(250);
-                fadeOut.start();
-            }
-            if (card.getCardBackgroundColor().getDefaultColor() == 0xFFFF0000) {
-                ObjectAnimator fadeOut = ObjectAnimator.ofArgb(card, "cardBackgroundColor", 0xFFFF0000, 0xFFFFFFFF);
-                fadeOut.setDuration(250);
-                fadeOut.start();
-            }
+        if (wonTextView.getAlpha() == 1) {
+            ObjectAnimator fadeOut = ObjectAnimator.ofFloat(wonTextView, "alpha", 1, 0);
+            fadeOut.setDuration(250);
+            fadeOut.start();
         }
-        new Handler().postDelayed(this::initGame, 200);
+        if (lostTextView.getAlpha() == 1) {
+            ObjectAnimator fadeOut = ObjectAnimator.ofFloat(lostTextView, "alpha", 1, 0);
+            fadeOut.setDuration(250);
+            fadeOut.start();
+        }
+        closedCardsCount = rows * columns;
+        isGameLost = false;
+        new Handler().postDelayed(() -> {
+            if (gridLayout.getAlpha() == 0) {
+                ObjectAnimator fadeOut = ObjectAnimator.ofFloat(gridLayout, "alpha", 0, 1);
+                fadeOut.setDuration(300);
+                fadeOut.setStartDelay(100);
+                fadeOut.start();
+            }
+            for (int i = 0; i < rows * columns; i++) {
+                CardView card = (CardView) gridLayout.getChildAt(i);
+                View text = card.findViewById(R.id.mine_text);
+                View flag = card.findViewById(R.id.flagImage);
+                if (text.getAlpha() == 1) {
+                    ObjectAnimator fadeOut = ObjectAnimator.ofFloat(text, "alpha", 1, 0);
+                    fadeOut.setDuration(250);
+                    fadeOut.start();
+                }
+                if (flag.getAlpha() == 1) {
+                    ObjectAnimator fadeOut = ObjectAnimator.ofFloat(flag, "alpha", 1, 0);
+                    fadeOut.setDuration(250);
+                    fadeOut.start();
+                }
+                if (card.getCardBackgroundColor().getDefaultColor() == 0xFFFF0000) {
+                    ObjectAnimator fadeOut = ObjectAnimator.ofArgb(card, "cardBackgroundColor", 0xFFFF0000, 0xFFFFFFFF);
+                    fadeOut.setDuration(250);
+                    fadeOut.start();
+                }
+            }
+            new Handler().postDelayed(this::initGame, 200);
+        }, 250);
     }
 
     void lostGame() {
-        for (int i = 0; i < rows*columns; i++) {
-            gridLayout.getChildAt(i).setOnClickListener(view -> {});
-            gridLayout.getChildAt(i).setOnLongClickListener(view -> {return true;});
+        for (int i = 0; i < rows * columns; i++) {
+            gridLayout.getChildAt(i).setOnClickListener(view -> {
+            });
+            gridLayout.getChildAt(i).setOnLongClickListener(view -> true);
         }
+        ObjectAnimator fadeOut = ObjectAnimator.ofFloat(gridLayout, "alpha", 1, 0);
+        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(lostTextView, "alpha", 0, 1);
+        fadeOut.setDuration(1000);
+        fadeOut.start();
+        fadeIn.setDuration(500);
+        fadeIn.setStartDelay(500);
+        fadeIn.start();
+    }
+
+    void wonGame() {
+        Log.i("won", "Game won");
+        ObjectAnimator fadeOut = ObjectAnimator.ofFloat(gridLayout, "alpha", 1, 0);
+        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(wonTextView, "alpha", 0, 1);
+        fadeOut.setDuration(1000);
+        fadeOut.start();
+        fadeIn.setDuration(500);
+        fadeIn.setStartDelay(500);
+        fadeIn.start();
     }
 
     void openCard(int y, int x, int depthLevel, List<Integer> visited) {
         if (minefield[y][x] == 9) return;
         if (minefield[y][x] < 0) return;
-        if (minefield[y][x] == 10) lostGame();
+        if (minefield[y][x] == 10 && !isGameLost) {
+            isGameLost = true;
+            new Handler().postDelayed(this::lostGame, depthLevel * 300L);
+        }
         int cardPos = y * columns + x;
 
         if (visited.contains(cardPos)) return;
@@ -129,6 +177,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }, 0);
         }
+
+        closedCardsCount--;
+        if (closedCardsCount == bombCount && !isGameLost) {
+            new Handler().postDelayed(this::wonGame, depthLevel * 300L);
+        }
     }
 
     void setFlag(int y, int x) {
@@ -136,13 +189,14 @@ public class MainActivity extends AppCompatActivity {
         View card = gridLayout.getChildAt(cardPos);
         View flag = card.findViewById(R.id.flagImage);
 
-        if (minefield[y][x] == 9)
+        if (minefield[y][x] == 9) {
             minefield[y][x] = bombs.contains(new Pair<>(y, x)) ? 10 : calculateAround(y, x);
-        else {
+            flagCount--;
+        } else {
             minefield[y][x] = 9;
             flagCount++;
-            flagsTextView.setText(String.valueOf(flagCount));
         }
+        flagsTextView.setText(String.valueOf(flagCount));
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(flag, "alpha", flag.getAlpha(), Math.abs(flag.getAlpha() - 1));
         fadeIn.setDuration(250);
         fadeIn.start();
@@ -182,7 +236,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void initField() {
-        isGameStarted = true;
         Random random = new Random();
         bombs = new ArrayList<>();
         for (int y = 0; y < rows; y++) {

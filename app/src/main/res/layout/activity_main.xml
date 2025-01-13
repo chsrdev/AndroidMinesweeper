@@ -29,6 +29,7 @@
         app:layout_constraintEnd_toEndOf="@id/bombsCountTitle"
         app:layout_constraintStart_toStartOf="@id/bombsCountTitle"
         app:layout_constraintTop_toBottomOf="@id/bombsCountTitle" />
+
     <TextView
         android:id="@+id/flagsTitle"
         android:layout_width="wrap_content"
@@ -46,9 +47,9 @@
         android:id="@+id/flags"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="0"
         android:textColor="@color/black"
         android:textSize="32sp"
-        android:text="0"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@id/flagsTitle"
         app:layout_constraintStart_toStartOf="@id/flagsTitle"
@@ -65,7 +66,34 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
+        <TextView
+            android:id="@+id/wonText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/you_won"
+            android:alpha="0"
+            android:textSize="64sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:textColor="@color/green"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+        <TextView
+            android:id="@+id/lostText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/you_lost"
+            android:alpha="0"
+            android:textSize="64sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:textColor="@color/red"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
         <GridLayout
             android:id="@+id/grid"
             android:layout_width="match_parent"
