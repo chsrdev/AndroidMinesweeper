@@ -3,6 +3,7 @@ package dev.chsr.minesweeper;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,8 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
     final int rows = 7;
     final int columns = 7;
-    final int bombCount = 1;
+    final int bombCount = 6;
+    int flagCount = 0;
     int[][] minefield = new int[rows][columns];
     int[] bombCountColor = {
             0xAAAAAAAA,
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
     GridLayout gridLayout;
     Button restartButton;
+    TextView bombsCountTextView;
+    TextView flagsTextView;
 
     LayoutInflater layoutInflater;
 
@@ -49,43 +53,57 @@ public class MainActivity extends AppCompatActivity {
         layoutInflater = LayoutInflater.from(this);
         gridLayout = findViewById(R.id.grid);
         restartButton = findViewById(R.id.restartBtn);
-        restartButton.setOnClickListener(view -> {
-            for (int i = 0; i < rows * columns - 1; i++) {
-                CardView card = (CardView) gridLayout.getChildAt(i);
-                View text = card.findViewById(R.id.mine_text);
-                View flag = card.findViewById(R.id.flagImage);
-                if (text.getAlpha() == 1) {
-                    ObjectAnimator fadeOut = ObjectAnimator.ofFloat(text, "alpha", 1, 0);
-                    fadeOut.setDuration(250);
-                    fadeOut.start();
-                }
-                if (flag.getAlpha() == 1) {
-                    ObjectAnimator fadeOut = ObjectAnimator.ofFloat(flag, "alpha", 1, 0);
-                    fadeOut.setDuration(250);
-                    fadeOut.start();
-                }
-                if (card.getCardBackgroundColor().getDefaultColor() == 0xFFFF0000) {
-                    ObjectAnimator fadeOut = ObjectAnimator.ofArgb(card, "cardBackgroundColor", 0xFFFF0000, 0xFFFFFFFF);
-                    fadeOut.setDuration(250);
-                    fadeOut.start();
-                }
-            }
-            new Handler().postDelayed(this::initGame, 200);
-        });
+        restartButton.setOnClickListener(view -> restartGame());
+        flagsTextView = findViewById(R.id.flags);
+        bombsCountTextView = findViewById(R.id.bombsCount);
+        bombsCountTextView.setText(String.valueOf(bombCount));
         initGame();
+    }
+
+    private void restartGame() {
+        for (int i = 0; i < rows * columns; i++) {
+            CardView card = (CardView) gridLayout.getChildAt(i);
+            View text = card.findViewById(R.id.mine_text);
+            View flag = card.findViewById(R.id.flagImage);
+            if (text.getAlpha() == 1) {
+                ObjectAnimator fadeOut = ObjectAnimator.ofFloat(text, "alpha", 1, 0);
+                fadeOut.setDuration(250);
+                fadeOut.start();
+            }
+            if (flag.getAlpha() == 1) {
+                ObjectAnimator fadeOut = ObjectAnimator.ofFloat(flag, "alpha", 1, 0);
+                fadeOut.setDuration(250);
+                fadeOut.start();
+            }
+            if (card.getCardBackgroundColor().getDefaultColor() == 0xFFFF0000) {
+                ObjectAnimator fadeOut = ObjectAnimator.ofArgb(card, "cardBackgroundColor", 0xFFFF0000, 0xFFFFFFFF);
+                fadeOut.setDuration(250);
+                fadeOut.start();
+            }
+        }
+        new Handler().postDelayed(this::initGame, 200);
+    }
+
+    void lostGame() {
+        for (int i = 0; i < rows*columns; i++) {
+            gridLayout.getChildAt(i).setOnClickListener(view -> {});
+            gridLayout.getChildAt(i).setOnLongClickListener(view -> {return true;});
+        }
     }
 
     void openCard(int y, int x, int depthLevel, List<Integer> visited) {
         if (minefield[y][x] == 9) return;
+        if (minefield[y][x] < 0) return;
+        if (minefield[y][x] == 10) lostGame();
         int cardPos = y * columns + x;
 
         if (visited.contains(cardPos)) return;
         visited.add(cardPos);
 
         CardView card = (CardView) gridLayout.getChildAt(cardPos);
-        if (card.findViewById(R.id.mine_text).getAlpha() == 1) return;
         card.setOnClickListener(_v -> {
         });
+        card.setOnLongClickListener(_v -> true);
 
         ObjectAnimator rotateY = ObjectAnimator.ofFloat(card, "rotationY", 0f, 180f);
         ObjectAnimator animator = minefield[y][x] == 10
@@ -97,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
         animator.setStartDelay(depthLevel * 300L + 400);
         rotateY.start();
         animator.start();
+
+        minefield[y][x] = -minefield[y][x];
 
         if (minefield[y][x] == 0) {
             new Handler().postDelayed(() -> {
@@ -114,12 +134,15 @@ public class MainActivity extends AppCompatActivity {
     void setFlag(int y, int x) {
         int cardPos = y * columns + x;
         View card = gridLayout.getChildAt(cardPos);
-        if (card.findViewById(R.id.mine_text).getAlpha() == 1) return;
         View flag = card.findViewById(R.id.flagImage);
-        if (flag.getAlpha() == 1) {
+
+        if (minefield[y][x] == 9)
             minefield[y][x] = bombs.contains(new Pair<>(y, x)) ? 10 : calculateAround(y, x);
-        } else {
+        else {
             minefield[y][x] = 9;
+            flagCount++;
+            flagsTextView.setText(String.valueOf(flagCount));
+            flagCount = 0;
         }
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(flag, "alpha", flag.getAlpha(), Math.abs(flag.getAlpha() - 1));
         fadeIn.setDuration(250);
@@ -160,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
     void initField() {
         isGameStarted = true;
         Random random = new Random();
+        bombs = new ArrayList<>();
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 minefield[y][x] = 0;
@@ -171,9 +195,9 @@ public class MainActivity extends AppCompatActivity {
             while (minefield[y][x] == 10) {
                 y = random.nextInt(rows);
                 x = random.nextInt(columns);
-                bombs.add(new Pair<>(y, x));
             }
             minefield[y][x] = 10;
+            bombs.add(new Pair<>(y, x));
         }
     }
 

@@ -10,12 +10,12 @@
         android:id="@+id/bombsCountTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/bombs_count"
+        android:text="@string/bombs"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/gridCardView"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/flagsTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,11 +25,34 @@
         android:layout_height="wrap_content"
         android:textColor="@color/black"
         android:textSize="32sp"
-        android:text="7"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/bombsCountTitle"
+        app:layout_constraintStart_toStartOf="@id/bombsCountTitle"
         app:layout_constraintTop_toBottomOf="@id/bombsCountTitle" />
+    <TextView
+        android:id="@+id/flagsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/flags"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/gridCardView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bombsCountTitle"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/flags"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="32sp"
+        android:text="0"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/flagsTitle"
+        app:layout_constraintStart_toStartOf="@id/flagsTitle"
+        app:layout_constraintTop_toBottomOf="@id/flagsTitle" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/gridCardView"

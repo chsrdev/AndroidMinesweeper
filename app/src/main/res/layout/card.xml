@@ -16,10 +16,10 @@
             android:id="@+id/flagImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="3dp"
             android:layout_gravity="center"
-            android:rotationY="180"
+            android:layout_margin="3dp"
             android:alpha="0"
+            android:rotationY="180"
             android:src="@drawable/flag" />
 
         <TextView
