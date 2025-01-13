@@ -66,34 +66,37 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <TextView
             android:id="@+id/wonText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/you_won"
+            android:layout_gravity="center"
             android:alpha="0"
+            android:text="@string/you_won"
+            android:textColor="@color/green"
             android:textSize="64sp"
             android:textStyle="bold"
-            android:layout_gravity="center"
-            android:textColor="@color/green"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/lostText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/you_lost"
+            android:layout_gravity="center"
             android:alpha="0"
+            android:text="@string/you_lost"
+            android:textColor="@color/red"
             android:textSize="64sp"
             android:textStyle="bold"
-            android:layout_gravity="center"
-            android:textColor="@color/red"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <GridLayout
             android:id="@+id/grid"
             android:layout_width="match_parent"

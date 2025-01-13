@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
         fadeIn.setDuration(500);
         fadeIn.setStartDelay(500);
         fadeIn.start();
+        new Handler().postDelayed(this::restartGame, 1600);
     }
 
     void wonGame() {
