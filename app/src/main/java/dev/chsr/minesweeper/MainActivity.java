@@ -18,7 +18,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
     final int rows = 7;
     final int columns = 7;
-    final int bombCount = 10;
+    final int bombCount = 7;
     int[][] minefield = new int[rows][columns];
     int[] bombCountColor = {
             0xAAAAAAAA,
