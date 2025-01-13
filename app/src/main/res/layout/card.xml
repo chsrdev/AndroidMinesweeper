@@ -8,15 +8,31 @@
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
-    <TextView
-        android:id="@+id/mine_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:alpha="0"
-        android:gravity="center"
-        android:rotationY="180"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/flagImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="3dp"
+            android:layout_gravity="center"
+            android:rotationY="180"
+            android:alpha="0"
+            android:src="@drawable/flag" />
+
+        <TextView
+            android:id="@+id/mine_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:alpha="0"
+            android:gravity="center"
+            android:rotationY="180"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+
 </androidx.cardview.widget.CardView>
