@@ -21,7 +21,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
     final int rows = 7;
     final int columns = 7;
-    final int bombCount = 2;
+    final int bombCount = 6;
     int flagCount = 0;
     int closedCardsCount = rows * columns;
     int[][] minefield = new int[rows][columns];
